@@ -11,6 +11,7 @@ namespace PlayerSpace
 
         private Rigidbody _rb;
         public static Player Instance { get; private set; }
+        public bool IsFiring { get; set; }
 
         private void Awake()
         {
@@ -28,9 +29,9 @@ namespace PlayerSpace
 
             _rb.position = new Vector3
             (
-                Mathf.Clamp(_rb.position.x, GameManagement.Instance.Boundary.xMin,  GameManagement.Instance.Boundary.xMax),
+                Mathf.Clamp(_rb.position.x, GameManagement.Instance.MovingBoundary.xMin,  GameManagement.Instance.MovingBoundary.xMax),
                 0,
-                Mathf.Clamp(_rb.position.z,  GameManagement.Instance.Boundary.zMin,  GameManagement.Instance.Boundary.zMax)
+                Mathf.Clamp(_rb.position.z,  GameManagement.Instance.MovingBoundary.zMin,  GameManagement.Instance.MovingBoundary.zMax)
             );
             
             _rb.rotation = Quaternion.Euler(Mathf.Min(_rb.velocity.z, 0) * _tilt,0,_rb.velocity.x * -_tilt);

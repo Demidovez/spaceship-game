@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace AsteroidSpace
@@ -17,6 +18,16 @@ namespace AsteroidSpace
         private List<GameObject> _asteroidsPool;
         private float _timer;
         private Bounds _spawnBounds;
+        private bool _isSpawnCompleted;
+        private int _countDestroyedAsteroids;
+        
+        public delegate void OnAsteroidsPoolEmpty();
+        public static event OnAsteroidsPoolEmpty OnAsteroidsPoolEmptyEvent;
+        
+        private void OnEnable()
+        {
+            Asteroid.OnAsteroidDestroyedEvent += OnAsteroidDestroyed;
+        }
         
         private void Start()
         {
@@ -28,12 +39,27 @@ namespace AsteroidSpace
         
         private void Update()
         {
+            if (_isSpawnCompleted)
+            {
+                return;
+            }
+            
             _timer += Time.deltaTime;
 
             if (_timer >= _spawnInterval)
             {
                 _timer = 0;
                 SpawnAsteroid();
+            }
+        }
+
+        private void OnAsteroidDestroyed()
+        {
+            _countDestroyedAsteroids++;
+
+            if (_countDestroyedAsteroids >= _initialPoolSize)
+            {
+                OnAsteroidsPoolEmptyEvent?.Invoke();
             }
         }
         
@@ -46,6 +72,10 @@ namespace AsteroidSpace
                 asteroid.transform.position = new Vector3(Random.Range(_spawnBounds.min.x, _spawnBounds.max.x), transform.position.y, transform.position.z);
                 asteroid.transform.rotation = transform.rotation;
                 asteroid.SetActive(true);
+            }
+            else
+            {
+                _isSpawnCompleted = true;
             }
         }
         
@@ -63,16 +93,16 @@ namespace AsteroidSpace
         {
             foreach (var asteroid in _asteroidsPool)
             {
-                if (!asteroid.activeInHierarchy)
+                if (!asteroid.IsDestroyed() && !asteroid.activeInHierarchy)
                 {
                     return asteroid;
                 }
             }
 
-            return CreateAsteroid(_asteroidsPool.Count);
+            return null;
         }
         
-        private GameObject CreateAsteroid(int index)
+        private void CreateAsteroid(int index)
         {
             GameObject asteroidPrefab = (index % 3) switch
             {
@@ -86,8 +116,11 @@ namespace AsteroidSpace
             newAsteroid.SetActive(false);
                 
             _asteroidsPool.Add(newAsteroid);
-
-            return newAsteroid;
+        }
+        
+        private void OnDisable()
+        {
+            Asteroid.OnAsteroidDestroyedEvent -= OnAsteroidDestroyed;
         }
     }
 }

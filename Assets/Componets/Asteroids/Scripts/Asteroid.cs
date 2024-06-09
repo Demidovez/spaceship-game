@@ -14,6 +14,12 @@ namespace AsteroidSpace
         public delegate void OnAsteroidCollision(Asteroid asteroid, GameObject other);
         public static event OnAsteroidCollision OnAsteroidCollisionEvent;
         
+        public delegate void OnAsteroidTookDamage(Asteroid asteroid);
+        public static event OnAsteroidTookDamage OnAsteroidTookDamageEvent;
+        
+        public delegate void OnAsteroidDestroyed();
+        public static event OnAsteroidDestroyed OnAsteroidDestroyedEvent;
+        
         private void Start()
         {
             _rigidBody = GetComponent<Rigidbody>();
@@ -30,10 +36,16 @@ namespace AsteroidSpace
             }
         }
         
-        public void SetInactive()
+        public void Die()
         {
-            _isMoved = false;
-            gameObject.SetActive(false);
+            OnAsteroidDestroyedEvent?.Invoke();
+            Destroy(gameObject);
+        }
+        
+        public void TakeDamage()
+        {
+            OnAsteroidTookDamageEvent?.Invoke(this);
+            Die();
         }
         
         private void OnTriggerEnter(Collider other)

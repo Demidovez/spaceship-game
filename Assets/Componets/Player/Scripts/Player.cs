@@ -13,7 +13,7 @@ namespace PlayerSpace
         private Rigidbody _rb;
         public static Player Instance { get; private set; }
         public bool IsFiring { get; set; }
-        private bool _isDead;
+        public bool IsDead { get; private set; }
         
         public delegate void OnPlayerTookDamage(Player player);
         public static event OnPlayerTookDamage OnPlayerTookDamageEvent;
@@ -44,26 +44,25 @@ namespace PlayerSpace
                 Mathf.Clamp(_rb.position.z,  boundary.zMin,  boundary.zMax)
             );
             
-            _rb.rotation = Quaternion.Euler(Mathf.Min(_rb.velocity.z, 0) * _tilt,0,_rb.velocity.x * -_tilt);
+            _rb.rotation = Quaternion.Euler(0,0,_rb.velocity.x * -_tilt);
         }
         
         private void Die()
         {
             OnPlayerDeadEvent?.Invoke(this);
+            gameObject.SetActive(false);
+            IsDead = true;
         }
 
         public void TakeDamage()
         {
-            if (_isDead)
+            if (IsDead)
             {
                 return;
             }
             
             OnPlayerTookDamageEvent?.Invoke(this);
-            gameObject.SetActive(false);
-            _isDead = true;
-
-            Invoke(nameof(Die), 1.5f);
+            Die();
         }
     }
 }

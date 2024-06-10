@@ -285,7 +285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e1cd6b40964e9543aa8dbe0c7d39598, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: -0.5
+  _speed: -2.5
   _height: 25
 --- !u!1 &574091292
 GameObject:
@@ -498,8 +498,8 @@ MonoBehaviour:
   _asteroid1Prefab: {fileID: 1031126754227850605, guid: c56baee8a42b5be41a19b1cda902d98b, type: 3}
   _asteroid2Prefab: {fileID: 8785739486691134143, guid: 793e3be88e52dc447b4405042b5e9e5b, type: 3}
   _asteroid3Prefab: {fileID: 7198033422110414640, guid: 75709ffbc78d2db458c58150af96264e, type: 3}
-  _initialPoolSize: 10
-  _spawnInterval: 2
+  _initialPoolSize: 15
+  _spawnInterval: 1
 --- !u!65 &865510876
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -746,6 +746,10 @@ MonoBehaviour:
     xMax: 6
     zMin: -7
     zMax: 8
+  _secondsToStartWave: 2
+  _secondsToSpawnAsteroids: 4
+  _secondsToSpawnEnemies: 3
+  _secondsToWaitWave: 3
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0

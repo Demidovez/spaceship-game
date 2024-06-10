@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using GameManagementSpace;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -31,7 +32,6 @@ namespace AsteroidSpace
         
         private void Start()
         {
-            _timer = _spawnInterval;
             _spawnBounds = GetComponent<Collider>().bounds;
             
             AsteroidsInit();
@@ -39,8 +39,9 @@ namespace AsteroidSpace
         
         private void Update()
         {
-            if (_isSpawnCompleted)
+            if (_isSpawnCompleted || !GameManagement.Instance.CanSpawnAsteroids)
             {
+                _timer = _spawnInterval;
                 return;
             }
             

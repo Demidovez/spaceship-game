@@ -181,11 +181,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cd7ffb400be9ee4e8d9fb08662442df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speedMin: 1
+  _speedMin: 2
   _speedMax: 3
   _rotationY: -180
-  _tilt: 5
-  _dodge: 4
+  _tilt: 15
+  _tiltMin: -35
+  _tiltMax: 35
+  _dodgeMin: 2
+  _dodgeMax: 4
   _smoothing: 1
   _startWait: {x: 0, y: 3}
   _waveTimer: {x: 0, y: 3}

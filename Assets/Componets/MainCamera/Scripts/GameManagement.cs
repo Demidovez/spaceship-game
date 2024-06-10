@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using AsteroidSpace;
 using BoltSpace;
 using EnemySpace;
@@ -18,8 +19,15 @@ namespace GameManagementSpace
 
     public class GameManagement: MonoBehaviour
     {
+        [Header("Boundaries")]
         [SerializeField] private MovingBoundary _movingPlayerBoundary;
         [SerializeField] private MovingBoundary _movingEnemyBoundary;
+
+        [Header("Spawns")] 
+        [SerializeField] private float _secondsToStartWave = 2f;
+        [SerializeField] private float _secondsToSpawnAsteroids = 3f;
+        [SerializeField] private float _secondsToSpawnEnemies = 3f;
+        [SerializeField] private float  _secondsToWaitWave = 3f;
 
         public static GameManagement Instance { get; private set; }
         public MovingBoundary MovingPlayerBoundary => _movingPlayerBoundary;
@@ -27,6 +35,8 @@ namespace GameManagementSpace
         private bool _allEnemiesDestroyed;
         private bool _allAsteroidsDestroyed;
         private bool _isWin;
+        public bool CanSpawnAsteroids { get; private set; }
+        public bool CanSpawnEnemies { get; private set; }
 
         private void Awake()
         {
@@ -44,13 +54,38 @@ namespace GameManagementSpace
             EnemiesSpawn.OnEnemiesPoolEmptyEvent += OnEnemiesPoolEmpty;
             AsteroidsSpawn.OnAsteroidsPoolEmptyEvent += OnAsteroidsPoolEmpty;
         }
-        
+
+        private void Start()
+        {
+            StartCoroutine(SpawnsPermissions());
+        }
+
         private void Update()
         {
             if (_allEnemiesDestroyed && _allAsteroidsDestroyed && !_isWin)
             {
                 _isWin = true;
                 PopupsManagement.Instance.ShowGameWinPopup();
+            }
+        }
+        
+        private IEnumerator SpawnsPermissions()
+        {
+            yield return new WaitForSeconds(_secondsToStartWave);
+            
+            while (!Player.Instance.IsDead)
+            {
+                CanSpawnAsteroids = true;
+                
+                yield return new WaitForSeconds(_secondsToSpawnAsteroids);
+                CanSpawnAsteroids = false;
+                CanSpawnEnemies = true;
+                
+                yield return new WaitForSeconds(_secondsToSpawnEnemies);
+                CanSpawnAsteroids = false;
+                CanSpawnEnemies = false;
+                
+                yield return new WaitForSeconds(_secondsToWaitWave);
             }
         }
 
@@ -132,9 +167,14 @@ namespace GameManagementSpace
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
-        private static void OnPlayerDead(Player player)
+        private void ShowGameOverPopup()
         {
             PopupsManagement.Instance.ShowGameOverPopup();
+        }
+
+        private void OnPlayerDead(Player player)
+        {
+            Invoke(nameof(ShowGameOverPopup), 1.5f);
         }
         
         private void OnEnemiesPoolEmpty()

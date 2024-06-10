@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using GameManagementSpace;
 using Unity.VisualScripting;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -30,7 +31,6 @@ namespace EnemySpace
 
         private void Start()
         {
-            _timer = _spawnInterval;
             _spawnBounds = GetComponent<Collider>().bounds;
             
             EnemiesInit();
@@ -38,8 +38,9 @@ namespace EnemySpace
         
         private void Update()
         {
-            if (_isSpawnCompleted)
+            if (_isSpawnCompleted || !GameManagement.Instance.CanSpawnEnemies)
             {
+                _timer = _spawnInterval;
                 return;
             }
             

@@ -1,3 +1,4 @@
+using System.Collections;
 using AsteroidSpace;
 using EnemySpace;
 using PlayerSpace;
@@ -7,6 +8,9 @@ namespace GameManagementSpace
 {
     public class ExplosionsManagement : MonoBehaviour
     {
+        [SerializeField] private float _explosionLiveTime = 2f;
+        
+        [Header("Explosions")]
         [SerializeField] private GameObject _explosionAsteroidPrefab;
         [SerializeField] private GameObject _explosionEnemyPrefab;
         [SerializeField] private GameObject _explosionPlayerPrefab;
@@ -20,17 +24,30 @@ namespace GameManagementSpace
 
         private void OnAsteroidTookDamage(Asteroid asteroid)
         {
-            Instantiate(_explosionAsteroidPrefab, asteroid.transform.position, asteroid.transform.rotation);
+            ShowExplosion(_explosionAsteroidPrefab, asteroid.gameObject);
         }
         
         private void OnPlayerTookDamage(Player player)
         {
-            Instantiate(_explosionPlayerPrefab, player.transform.position, player.transform.rotation);
+            ShowExplosion(_explosionPlayerPrefab, player.gameObject);
         }
         
         private void OnEnemyTookDamage(Enemy enemy)
         {
-            Instantiate(_explosionEnemyPrefab, enemy.transform.position, enemy.transform.rotation);
+            ShowExplosion(_explosionEnemyPrefab, enemy.gameObject);
+        }
+
+        private void ShowExplosion(GameObject explosionPrefab, GameObject sourceObj)
+        {
+            GameObject explosionObj = Instantiate(explosionPrefab, sourceObj.transform.position, sourceObj.transform.rotation);
+
+            StartCoroutine(DestroyExplosion(explosionObj));
+        }
+
+        private IEnumerator DestroyExplosion(GameObject obj)
+        {
+            yield return new WaitForSeconds(_explosionLiveTime);
+            Destroy(obj);
         }
         
         private void OnDisable()
